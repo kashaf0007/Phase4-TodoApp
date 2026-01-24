@@ -9,9 +9,9 @@ from typing import Dict
 from datetime import datetime
 import logging
 
-from .database.connection import engine
-from .database.deps import get_session
-from .models.task import Task
+from backend.database.connection import engine
+from backend.database.deps import get_session
+from backend.models.task import Task
 
 router = APIRouter()
 

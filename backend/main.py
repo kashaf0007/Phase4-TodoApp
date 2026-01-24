@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, Body
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session
 import os
 from typing import List, Optional
@@ -19,6 +20,16 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+# Configure CORS to allow frontend domain
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000", "http://localhost:3001", "https://todo-app-frontend.vercel.app"],  # Adjust as needed
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    # Additional origins can be added as needed
+)
 
 
 @app.get("/")

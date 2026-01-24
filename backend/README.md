@@ -1,34 +1,71 @@
-# Todo Application - Database Security Practices
+# Backend & MCP Architecture
 
-## Overview
-This document outlines the security practices implemented for the database layer of the Todo application, specifically for the Neon PostgreSQL integration.
+This project implements a stateless FastAPI backend that serves as a single entry point for AI-powered chat interactions. The system uses OpenAI Agents SDK to process natural language requests, which triggers MCP tools for all state-changing operations. All conversation history and task data is persisted in Neon Serverless PostgreSQL using SQLModel ORM. The architecture enforces strict statelessness with no in-memory storage, requiring all context to be reconstructed from the database on each request.
+
+## Features
+
+- Single entry point for chat interactions at `/api/{user_id}/chat`
+- MCP tools for all state-changing operations (add_task, list_tasks, complete_task, delete_task, update_task)
+- Strict statelessness - no in-memory storage
+- Neon Serverless PostgreSQL with SQLModel ORM
+- Better Auth integration for user authentication
+- Tool call logging for transparency
+
+## Tech Stack
+
+- Python 3.11
+- FastAPI
+- SQLModel
+- Better Auth
+- OpenAI Agents SDK
+- FastMCP
+- Neon PostgreSQL
+
+## Setup
+
+1. Clone the repository
+2. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Set up environment variables (see `.env.example`)
+5. Run the application:
+   ```bash
+   cd backend
+   uvicorn app.main:app --reload --port 8000
+   ```
 
 ## Environment Variables
-- Database credentials are stored exclusively in environment variables
-- The `DATABASE_URL` environment variable contains the PostgreSQL connection string
-- Credentials are never hardcoded in the source code
-- The `.env` file is included in `.gitignore` to prevent accidental commits
 
-## Connection Security
-- All connections to Neon PostgreSQL use SSL encryption
-- Connection strings follow the format: `postgresql://username:password@host:port/database?sslmode=require`
-- Connection string components are validated before establishing connections
+Create a `.env` file with the following variables:
 
-## Credential Management
-- Database credentials are loaded at runtime from environment variables
-- Passwords are not logged or exposed in application logs
-- Connection pooling is used to minimize the number of active connections
+```env
+NEON_DATABASE_URL=your_neon_database_url
+BETTER_AUTH_SECRET=your_better_auth_secret
+BETTER_AUTH_URL=your_better_auth_url
+OPENAI_API_KEY=your_openai_api_key
+GEMINI_API_KEY=your_gemini_api_key  # If using Google's models
+DOMAIN_ALLOWLIST=your_frontend_domain
+```
 
-## Security Scanning
-- A security scanner is included to detect any hardcoded credentials in the codebase
-- Run `python backend/security_scanner.py` to scan for potential security issues
+## Running Tests
 
-## User Isolation
-- Each task is associated with a specific user via the `user_id` field
-- All database queries filter results by the authenticated user's ID
-- Users can only access their own tasks, preventing unauthorized data access
+```bash
+cd backend
+pytest
+```
 
-## Error Handling
-- Database connection errors are handled gracefully
-- Authentication failures return appropriate HTTP status codes
-- Sensitive information is not exposed in error messages
+## Architecture
+
+The application follows a clean architecture with the following layers:
+
+- **Models**: SQLModel definitions for Task, Conversation, Message
+- **Services**: Business logic and database operations
+- **Routes**: API endpoints
+- **Utils**: Helper functions and utilities
+- **MCP**: Model Context Protocol tools for state-changing operations

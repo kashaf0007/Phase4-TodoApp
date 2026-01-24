@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 
 from .config import get_settings
 from .database import create_db_and_tables
-from .api.routes import health, tasks, auth
+from .api.routes import health, tasks, auth, chat
 
 
 @asynccontextmanager
@@ -59,6 +59,7 @@ app.add_middleware(
 app.include_router(health.router, tags=["Health"])
 app.include_router(auth.router, tags=["Authentication"])
 app.include_router(tasks.router, tags=["Tasks"])
+app.include_router(chat.router, prefix="", tags=["Chat"])  # Include chat routes with no prefix
 
 
 @app.get("/")

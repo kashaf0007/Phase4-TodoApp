@@ -11,6 +11,7 @@ import { useAuth } from "@/lib/auth-client";
 import { taskApi } from "@/lib/api";
 import { TaskItem } from "./TaskItem";
 import { TaskForm } from "./TaskForm";
+import ChatInterface from './ChatInterface';
 import type { TaskCreate } from "../types/task";
 
 export function TaskList() {
@@ -50,9 +51,17 @@ export function TaskList() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="task-list-loading flex flex-column justify-center align-center">
-        <div className="spinner"></div>
-        <p className="mt-md text-secondary-200">Loading your tasks...</p>
+      <div className="task-list-container">
+        <div className="task-list-loading flex flex-column justify-center align-center">
+          <div className="spinner"></div>
+          <p className="mt-md text-secondary-200">Loading your tasks...</p>
+        </div>
+
+        {/* Show ChatInterface even during loading */}
+        <div className="chat-interface-container mt-lg" style={{ marginTop: '2rem' }}>
+          <h2 className="text-xl font-semibold text-white mb-4">AI Assistant</h2>
+          <ChatInterface userId={user?.id || ""} />
+        </div>
       </div>
     );
   }
@@ -60,9 +69,17 @@ export function TaskList() {
   // Error state
   if (fetchError) {
     return (
-      <div className="card p-lg mt-lg bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl">
-        <div className="error-message bg-red-500/20 border border-red-400/30 text-red-100 backdrop-blur-sm">
-          Error loading tasks: {(fetchError as Error).message}
+      <div className="task-list-container">
+        <div className="card p-lg mt-lg bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl">
+          <div className="error-message bg-red-500/20 border border-red-400/30 text-red-100 backdrop-blur-sm">
+            Error loading tasks: {(fetchError as Error).message}
+          </div>
+        </div>
+
+        {/* Show ChatInterface even during error */}
+        <div className="chat-interface-container mt-lg" style={{ marginTop: '2rem' }}>
+          <h2 className="text-xl font-semibold text-white mb-4">AI Assistant</h2>
+          <ChatInterface userId={user?.id || ""} />
         </div>
       </div>
     );
@@ -109,6 +126,12 @@ export function TaskList() {
             />
           </div>
         )}
+
+        {/* Chat Interface - Always visible */}
+        <div className="chat-interface-container mt-lg" style={{ marginTop: '2rem' }}>
+          <h2 className="text-xl font-semibold text-white mb-4">AI Assistant</h2>
+          <ChatInterface userId={user?.id || ""} />
+        </div>
       </div>
     );
   }
@@ -116,8 +139,8 @@ export function TaskList() {
   // Task list
   return (
     <div className="task-list-container">
-      {!showForm && (
-        <div className="mb-lg">
+      <div className="flex justify-between items-center mb-lg">
+        {!showForm && (
           <button
             onClick={() => setShowForm(true)}
             className="btn btn-primary task-list-add-btn flex align-center justify-center bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
@@ -127,28 +150,34 @@ export function TaskList() {
             </svg>
             Add Task
           </button>
-        </div>
-      )}
+        )}
 
-      {showForm && (
-        <div className="task-list-form card p-lg mb-lg bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl">
-          {error && (
-            <div className="error-message mb-lg bg-red-500/20 border border-red-400/30 text-red-100 backdrop-blur-sm">
-              {error}
-            </div>
-          )}
-          <TaskForm
-            onSubmit={handleCreateTask}
-            onCancel={() => setShowForm(false)}
-            loading={createMutation.isPending}
-          />
-        </div>
-      )}
+        {showForm && (
+          <div className="task-list-form card p-lg mb-lg bg-white/10 backdrop-blur-lg border border-white/20 shadow-xl flex-grow">
+            {error && (
+              <div className="error-message mb-lg bg-red-500/20 border border-red-400/30 text-red-100 backdrop-blur-sm">
+                {error}
+              </div>
+            )}
+            <TaskForm
+              onSubmit={handleCreateTask}
+              onCancel={() => setShowForm(false)}
+              loading={createMutation.isPending}
+            />
+          </div>
+        )}
+      </div>
 
       <div className="task-list-items">
         {tasks.map((task) => (
           <TaskItem key={task.id} task={task} userId={user?.id || ""} />
         ))}
+      </div>
+
+      {/* Chat Interface - Always visible */}
+      <div className="chat-interface-container mt-lg" style={{ marginTop: '2rem' }}>
+        <h2 className="text-xl font-semibold text-white mb-4">AI Assistant</h2>
+        <ChatInterface userId={user?.id || ""} />
       </div>
     </div>
   );

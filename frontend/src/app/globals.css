@@ -3,6 +3,9 @@
  * Modern design system with consistent color palette and typography
  */
 
+/* Import chat UI kit styles */
+@import '~@chatscope/chat-ui-kit-styles/dist/default/styles.min.css';
+
 :root {
   /* Color Palette */
   --primary-50: #f0f9ff;
