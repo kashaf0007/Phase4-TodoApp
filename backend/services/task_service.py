@@ -3,9 +3,18 @@ Task CRUD service for the Todo application.
 This module provides all the business logic for managing tasks.
 """
 
+import sys
+import os
 from typing import List, Optional
 from sqlmodel import Session, select
-from backend.src.models.task import Task
+
+# Add backend root to path to make imports work in Docker
+backend_root = os.path.join(os.path.dirname(__file__), '..')
+backend_root_abs = os.path.abspath(backend_root)
+if backend_root_abs not in sys.path:
+    sys.path.insert(0, backend_root_abs)
+
+from src.models.task import Task
 from ..database.errors import TaskNotFoundError
 
 

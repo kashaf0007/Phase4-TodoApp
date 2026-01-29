@@ -50,6 +50,97 @@ Deploy the frontend on Vercel:
 4. Set the build command to: `cd frontend && npm install && npm run build`
 5. Set the output directory to: `frontend/.next`
 
+## Kubernetes Deployment (Phase IV)
+
+Deploy the application to a local Kubernetes cluster using Helm charts.
+
+### Prerequisites for Kubernetes Deployment
+- Minikube (v1.20 or higher)
+- kubectl
+- Helm (v3.0 or higher)
+- Docker
+
+### Kubernetes Setup
+1. Start Minikube with ingress addon:
+   ```bash
+   minikube start --addons=ingress
+   ```
+
+2. Create the dedicated namespace:
+   ```bash
+   kubectl create namespace todo-namespace
+   ```
+
+3. Build and load container images into Minikube (assuming you have Dockerfiles for frontend and backend):
+   ```bash
+   # Build frontend image
+   docker build -f Dockerfile.frontend -t todo-app:frontend-v1.0 .
+   minikube image load todo-app:frontend-v1.0
+
+   # Build backend image
+   docker build -f Dockerfile.backend -t todo-app:backend-v1.0 .
+   minikube image load todo-app:backend-v1.0
+   ```
+
+### Kubernetes Deployment
+Deploy the application using Helm:
+
+```bash
+helm upgrade --install todo-chatbot ./charts/todo-chatbot \
+  --namespace todo-namespace \
+  --set frontend.image.tag=frontend-v1.0 \
+  --set backend.image.tag=backend-v1.0
+```
+
+### Accessing the Application in Kubernetes
+1. Get the Minikube IP:
+   ```bash
+   minikube ip
+   ```
+
+2. Access the frontend at `http://[MINIKUBE_IP]` and the API at `http://[MINIKUBE_IP]/api`
+
+### Kubernetes Validation
+Run the following commands to verify the deployment:
+
+```bash
+# Check all pods are running
+kubectl get pods -n todo-namespace
+
+# Check all services are properly configured
+kubectl get services -n todo-namespace
+
+# Check ingress rules are active
+kubectl get ingress -n todo-namespace
+```
+
+### Kubernetes Cleanup
+To remove the deployment:
+
+```bash
+helm uninstall todo-chatbot -n todo-namespace
+kubectl delete namespace todo-namespace
+```
+
+### Kubernetes Troubleshooting
+
+#### Common Issues
+
+1. **Images not found**: Ensure images are loaded into Minikube:
+   ```bash
+   minikube image ls | grep todo-app
+   ```
+
+2. **Ingress not working**: Check if NGINX ingress controller is running:
+   ```bash
+   kubectl get pods -n ingress-nginx
+   ```
+
+3. **Pods in CrashLoopBackOff**: Check pod logs:
+   ```bash
+   kubectl logs -n todo-namespace [POD_NAME]
+   ```
+
 ### Important Notes
 - Both frontend and backend must use the same `BETTER_AUTH_SECRET`
 - The backend is configured to allow CORS requests from `https://hackathon2-phase1-five.vercel.app`

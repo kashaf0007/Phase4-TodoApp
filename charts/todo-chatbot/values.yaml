@@ -1,0 +1,75 @@
+# Default values for todo-chatbot
+
+# Frontend configuration
+frontend:
+  replicaCount: 2
+  image:
+    repository: todo-app
+    tag: frontend-v1.0
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 80
+    nodePort: 30001
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Backend configuration
+backend:
+  replicaCount: 2
+  image:
+    repository: todo-app
+    tag: backend-v1.0
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 7860
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Database configuration
+database:
+  replicaCount: 1
+  image:
+    repository: postgres
+    tag: 15-alpine
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 5432
+  persistence:
+    enabled: true
+    size: 1Gi
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  env:
+    postgresUser: admin
+    postgresPassword: secretpassword
+    postgresDb: todo_db
+
+# Ingress configuration
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: localhost
+      paths:
+        - path: /
+          pathType: Prefix
+        - path: /api
+          pathType: Prefix

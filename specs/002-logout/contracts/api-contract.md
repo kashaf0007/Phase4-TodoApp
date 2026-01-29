@@ -68,7 +68,7 @@ After logout, existing API endpoints behave as expected with missing/invalid aut
 
 ### Authentication Endpoints (Unchanged)
 
-#### POST /api/auth/sign-in/email
+#### POST /api/email
 
 **Status**: Unchanged
 **Behavior**: User can sign in again after logging out

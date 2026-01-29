@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-config
+data:
+  API_URL: "http://localhost:30001/api"
+  NODE_ENV: "production"

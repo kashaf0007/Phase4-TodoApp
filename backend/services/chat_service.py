@@ -11,16 +11,21 @@ from datetime import datetime
 from typing import Dict, List, Optional, Any
 from sqlmodel import Session, select
 
-# Add backend root to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
+import sys
+import os
 
-from backend.src.models.message import Message
-from backend.src.models.conversation import Conversation
-from backend.mcp.tools.add_task import add_task
-from backend.mcp.tools.list_tasks import list_tasks
-from backend.mcp.tools.complete_task import complete_task
-from backend.mcp.tools.delete_task import delete_task
-from backend.mcp.tools.update_task import update_task
+# Add the backend root directory to Python path to make imports work
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
+# Now we can import directly from src and other directories
+from src.models.message import Message
+from src.models.conversation import Conversation
+from mcp.tools.add_task import add_task
+from mcp.tools.list_tasks import list_tasks
+from mcp.tools.complete_task import complete_task
+from mcp.tools.delete_task import delete_task
+from mcp.tools.update_task import update_task
 
 # Qwen / OpenAI compatible client (change base_url & api_key as per your provider)
 from openai import OpenAI

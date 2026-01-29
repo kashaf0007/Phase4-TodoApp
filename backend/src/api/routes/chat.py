@@ -73,7 +73,15 @@ async def chat(
 
         # Integrate with AI agent service to get response
         # Import the agent service to process the message
-        from ....app.services.agent_service import AgentService
+        import sys
+        import os
+        # Add backend root to path to make imports work in Docker
+        backend_root = os.path.join(os.path.dirname(__file__), '..', '..', '..')
+        backend_root_abs = os.path.abspath(backend_root)
+        if backend_root_abs not in sys.path:
+            sys.path.insert(0, backend_root_abs)
+
+        from app.services.agent_service import AgentService
 
         # Get conversation history for context
         conversation_history = ChatService.get_messages_for_conversation(
